@@ -159,7 +159,7 @@ class OwnerViewModel @Inject constructor() : ViewModel() {
                         filter { eq("id", menuItemId) }
                     }
 
-                if (result.data.isEmpty()) {
+                if (result.data.isNullOrEmpty()) {
                     val error = "Failed to update item, no data was affected."
                     Log.e("OwnerViewModel", error)
                     onError(error)

@@ -165,6 +165,7 @@ fun MenuScreen(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Search
                 ),
+                maxLines = 1
             )
 
             Spacer(modifier = Modifier.height(20.dp))
