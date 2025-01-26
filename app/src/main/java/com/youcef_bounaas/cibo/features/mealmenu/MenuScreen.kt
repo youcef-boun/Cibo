@@ -98,10 +98,6 @@ fun MenuScreen(
                 title = {
                     Text(
                         text = "MENU",
-                        modifier = Modifier.clickable {
-                            navController.navigate("buttonScreen")
-                            Log.d("MenuScreen", "Navigating to buttonScreen")
-                        },
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
