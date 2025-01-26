@@ -34,14 +34,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             CiboTheme {
 
-                val viewModel by viewModels<MenuViewModel>()
-                val context = LocalContext.current
-                val navController = rememberNavController()
-                Log.d("MainActivity", "NavController initialized")
-
-
-
-                AppNavHost(navController)
+                AppNavHost()
 
             }
         }

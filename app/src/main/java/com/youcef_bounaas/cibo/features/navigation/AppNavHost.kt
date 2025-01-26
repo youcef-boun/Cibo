@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.youcef_bounaas.cibo.data.model.MenuItem
 import com.youcef_bounaas.cibo.data.model.SessionManager
 import com.youcef_bounaas.cibo.data.model.UserSession
@@ -31,11 +32,13 @@ import kotlinx.serialization.json.Json
 
 
 @Composable
-fun AppNavHost(navController: NavHostController) {
+fun AppNavHost() {
     val context = LocalContext.current
     val sessionManager = remember { SessionManager.getInstance(context) }
     val userSession by sessionManager.userSession.collectAsState(initial = UserSession())
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(context))
+    val navController = rememberNavController()
+
     Log.d("AppNavHost", "User session: $userSession")
 
     val isSessionLoading by sessionManager.isSessionLoading.collectAsState(initial = true)
