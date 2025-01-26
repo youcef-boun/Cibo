@@ -22,5 +22,7 @@ object SupabaseClientProvider {
         install(Storage) { // Removed the type parameter for Storage
             // settings
         }
+
+
     }
 }

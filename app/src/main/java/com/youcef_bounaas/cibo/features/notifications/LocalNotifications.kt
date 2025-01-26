@@ -8,9 +8,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material3.Icon
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -19,7 +16,8 @@ import com.youcef_bounaas.cibo.R
 
 
 
-fun showLocalNotification(context: Context) {
+@SuppressLint("ObsoleteSdkInt")
+fun showLocalNotification(context : Context) {
     // Create the Notification Channel (Android 8.0+)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val channelId = "Reminders notification"

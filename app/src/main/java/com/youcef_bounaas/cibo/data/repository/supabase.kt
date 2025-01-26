@@ -3,7 +3,6 @@ package com.youcef_bounaas.cibo.data.repository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import dagger.hilt.components.SingletonComponent
 import io.github.jan.supabase.SupabaseClient

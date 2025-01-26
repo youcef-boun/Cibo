@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.car.ui.lib)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.androidx.runtime)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -120,6 +121,20 @@ dependencies {
 
     //navigation
     implementation ("androidx.navigation:navigation-compose:2.8.5")
+
+
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+
+    implementation ("androidx.datastore:datastore-preferences:1.1.2")
+    implementation ("androidx.datastore:datastore-core:1.1.2")
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    implementation ("androidx.compose.runtime:runtime-saveable:1.7.6")
+
+
+
 
 
 

@@ -96,7 +96,7 @@ class OwnerViewModel @Inject constructor() : ViewModel() {
 
                 Log.d("OwnerViewModel", "Supabase response: ${result.data}")
 
-                if (result.data.isNullOrEmpty()) {
+                if (result.data.isEmpty()) {
                     Log.e("OwnerViewModel", "Failed to delete item, no data was affected.")
                     onError("Deletion failed. No data was deleted.")
                 } else {
@@ -159,7 +159,7 @@ class OwnerViewModel @Inject constructor() : ViewModel() {
                         filter { eq("id", menuItemId) }
                     }
 
-                if (result.data.isNullOrEmpty()) {
+                if (result.data.isEmpty()) {
                     val error = "Failed to update item, no data was affected."
                     Log.e("OwnerViewModel", error)
                     onError(error)

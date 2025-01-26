@@ -1,12 +1,23 @@
 package com.youcef_bounaas.cibo.features.navigation
 
+import android.content.Context
+import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -14,34 +25,45 @@ import com.youcef_bounaas.cibo.data.model.MenuItem
 import com.youcef_bounaas.cibo.data.model.SessionManager
 import com.youcef_bounaas.cibo.data.model.UserSession
 import com.youcef_bounaas.cibo.data.repository.Auth.AuthViewModel
+import com.youcef_bounaas.cibo.data.repository.Auth.AuthViewModelFactory
 import com.youcef_bounaas.cibo.features.Authentication.AuthScreen
 import com.youcef_bounaas.cibo.features.Settings.SettingsScreen
 import com.youcef_bounaas.cibo.features.mealmenu.MenuScreen
 import com.youcef_bounaas.cibo.features.mealmenu.OrderScreen
+import com.youcef_bounaas.cibo.features.profile.data.ProfileViewModel
 import com.youcef_bounaas.cibo.features.profile.presentation.ProfileScreen
+import kotlinx.serialization.json.Json
+
+import androidx.navigation.compose.composable
+import com.youcef_bounaas.cibo.test.ButtonScreen
+
 
 @Composable
-fun AppNavHost() {
+fun AppNavHost(navController: NavHostController) {
     val context = LocalContext.current
-    val navController = rememberNavController()
-
-    // Use Singleton to ensure one instance of SessionManager
     val sessionManager = remember { SessionManager.getInstance(context) }
-    val authViewModel = remember { AuthViewModel(context) }
-
-
-    // Collect session state
     val userSession by sessionManager.userSession.collectAsState(initial = UserSession())
+    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(context))
+    Log.d("AppNavHost", "User session: $userSession")
+
+    val isSessionLoading by sessionManager.isSessionLoading.collectAsState(initial = true)
+    if (isSessionLoading) {
+        CircularProgressIndicator()
+        // Show a loading screen or splash screen while session is being fetched
+        return
+    }
 
     NavHost(
         navController = navController,
         startDestination = if (userSession.isLoggedIn) "menuList" else "authScreen"
     ) {
         composable("authScreen") {
+            Log.d("AppNavHost", "Navigating to authScreen")
             AuthScreen(viewModel = authViewModel, navController = navController)
         }
 
         composable("menuList") {
+            Log.d("AppNavHost", "Navigating to menuList")
             MenuScreen(navController = navController, context = context)
 
             BackHandler {
@@ -49,39 +71,55 @@ fun AppNavHost() {
             }
         }
 
-        composable(
-            "orderScreen/{menuItem}"
-        ) { navBackStackEntry ->
+        composable("orderScreen/{menuItem}") { navBackStackEntry ->
             val json = navBackStackEntry.arguments?.getString("menuItem")
             val menuItem = json?.let {
-                kotlinx.serialization.json.Json.decodeFromString(MenuItem.serializer(), it)
+                Json.decodeFromString(MenuItem.serializer(), it)
             }
-            if (menuItem != null) OrderScreen(menuItem)
+            if (menuItem != null) {
+                Log.d("AppNavHost", "Navigating to orderScreen with menuItem: $menuItem")
+                OrderScreen(menuItem)
+            }
         }
 
         composable("profileScreen") {
+            Log.d("AppNavHost", "Navigating to profileScreen")
             SettingsScreen(navController = navController, viewModel = authViewModel)
         }
 
         composable("userInfoScreen") {
-            ProfileScreen(navController = navController, viewModel = authViewModel)
+            Log.d("AppNavHost", "Navigating to userInfoScreen")
+            val profileViewModel: ProfileViewModel = hiltViewModel()
+            ProfileScreen(navController = navController, profileViewModel)
         }
 
-
-
-
+        composable("buttonScreen") {
+            Log.d("AppNavHost", "Navigating to buttonScreen")
+            ButtonScreen()
+        }
     }
 
-    // Watch for auth state changes
-    LaunchedEffect(authViewModel.authState.value) {
-        when {
-            authViewModel.authState.value.startsWith("Sign in successful") ||
-                    authViewModel.authState.value.startsWith("Signup successful") -> {
-                navController.navigate("menuList") {
-                    popUpTo("authScreen") { inclusive = true }
-                    launchSingleTop = true
-                }
+
+
+// Watch for auth state changes
+LaunchedEffect(authViewModel.authState.value) {
+    Log.d("AppNavHost", "Auth state changed: ${authViewModel.authState.value}")
+    when {
+        authViewModel.authState.value.startsWith("Sign in successful") ||
+                authViewModel.authState.value.startsWith("Signup successful") -> {
+            navController.navigate("menuList") {
+                popUpTo("authScreen") { inclusive = true }
+                launchSingleTop = true
             }
         }
     }
 }
+
+
+
+
+
+
+
+}
+

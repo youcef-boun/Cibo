@@ -4,7 +4,10 @@ package com.youcef_bounaas.cibo.features.mealmenu
 
 
 import android.content.Context
+import android.content.res.Configuration
 import android.net.Uri
+import android.util.Log
+import android.view.MotionEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -71,42 +74,41 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import com.youcef_bounaas.cibo.features.OwnerOnly.OwnerViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-
 fun MenuScreen(
     viewModel: MenuViewModel = hiltViewModel(),
     navController: NavController,
     context: Context
 ) {
-
-    val searchQuery = remember { mutableStateOf("") }
-    var showDialog by remember { mutableStateOf(false) }
+    val searchQuery = rememberSaveable { mutableStateOf("") }
+    var showDialog by rememberSaveable { mutableStateOf(false) }
     val ownerViewModel: OwnerViewModel = hiltViewModel()
 
-
     Scaffold(
-
-
         topBar = {
             TopAppBar(
-                title = { Text(
-                    "MENU",
-                    fontSize = 35.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily(Font(R.font.samsung_bold))
-                ) },
+                title = {
+                    Text(
+                        text = "MENU",
+                        modifier = Modifier.clickable {
+                            navController.navigate("buttonScreen")
+                            Log.d("MenuScreen", "Navigating to buttonScreen")
+                        },
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
                 actions = {
                     Image(
-                        painterResource(
-                            id = R.drawable.user1
-                        ),
-                        "user image icon",
+                        painterResource(id = R.drawable.user1),
+                        contentDescription = "User Image Icon",
                         modifier = Modifier
                             .size(40.dp)
                             .clip(RoundedCornerShape(100))
@@ -121,10 +123,9 @@ fun MenuScreen(
                     onDismiss = { showDialog = false }
                 )
             }
-        }, floatingActionButton = {
-            FloatingActionButton(onClick = {
-                showDialog = true
-            }) {
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { showDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Meal")
             }
         }
@@ -134,22 +135,21 @@ fun MenuScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-
-
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(100),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(100)),
                 value = searchQuery.value,
                 onValueChange = { newText ->
-                    searchQuery.value = newText // update the search query
-                    viewModel.searchMenu(newText) // immediately trigger the search
+                    searchQuery.value = newText
+                    viewModel.searchMenu(newText)
                 },
                 placeholder = { Text("Search menu") },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Filled.Search, // Use Icons.Filled.Search as an image vector
+                        imageVector = Icons.Filled.Search,
                         contentDescription = "Search Icon"
                     )
                 },
@@ -170,30 +170,18 @@ fun MenuScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-
                 CategoriesList(viewModel = viewModel)
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 MenuList(navController = navController)
-
             }
-
-
         }
     }
-
-
-
 }
-
-
-
 
 
 @Composable
@@ -210,9 +198,7 @@ fun MenuList(
     var selectedItem by remember { mutableStateOf<MenuItem?>(null) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
-    val imagePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
+    val imagePicker = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
         imageUri = uri
     }
 
@@ -221,11 +207,7 @@ fun MenuList(
     }
 
     if (isLoading) {
-        CircularProgressIndicator(
-            modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center)
-        )
+        CircularProgressIndicator(modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center))
     } else {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -260,7 +242,6 @@ fun MenuList(
                                     .height(100.dp),
                                 contentScale = ContentScale.Crop
                             )
-
                             Text(menuItem.name)
                             Text("€${menuItem.price}", color = Color.Yellow)
                         }
@@ -296,14 +277,13 @@ fun MenuList(
                 onUpdate = { updatedMenuItem ->
                     scope.launch {
                         try {
-                            // Proceed with the update
                             ownerViewModel.updateItem(
                                 context = context,
                                 menuItemId = updatedMenuItem.id!!,
                                 updatedMenuItem = updatedMenuItem,
                                 newImageUri = imageUri,
                                 onSuccess = {
-                                    showDialog = false  // Hide dialog after update
+                                    showDialog = false
                                     selectedItem = null
                                     imageUri = null
                                     Toast.makeText(context, "Item updated successfully", Toast.LENGTH_SHORT).show()
@@ -316,8 +296,7 @@ fun MenuList(
                             Toast.makeText(context, e.message ?: "Unknown error", Toast.LENGTH_LONG).show()
                         }
                     }
-                }
-                ,
+                },
                 onPickImage = { imagePicker.launch("image/*") },
                 currentImageUri = imageUri
             )
@@ -354,20 +333,17 @@ fun DeleteOrUpdateDialog(
                     onValueChange = { name = it },
                     label = { Text("Name") }
                 )
-
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text("Description") }
                 )
-
                 OutlinedTextField(
                     value = price,
                     onValueChange = { price = it },
                     label = { Text("Price") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                 )
-
                 OutlinedTextField(
                     value = category,
                     onValueChange = { category = it },
@@ -411,7 +387,6 @@ fun DeleteOrUpdateDialog(
                 ) {
                     Text("Update")
                 }
-
                 Button(
                     onClick = { onDelete(menuItem.id!!) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
@@ -428,24 +403,16 @@ fun DeleteOrUpdateDialog(
     )
 }
 
-
-
-
-
-
 @Composable
 fun CategoriesList(
-    viewModel: MenuViewModel = hiltViewModel(),
-
-    ) {
+    viewModel: MenuViewModel = hiltViewModel()
+) {
     var selectedCategory by remember { mutableStateOf("") }
     val categories by viewModel.categories.collectAsState()
     val initialMenuItems by viewModel.initialMenuItems.collectAsState()
 
-    // Add debug log
     LaunchedEffect(categories) {
         println("Categories: $categories")
-
     }
 
     LazyRow(
@@ -456,11 +423,15 @@ fun CategoriesList(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val categoryImage = if (category == "All") {
-                    R.drawable.food
-                } else {
-                    initialMenuItems.firstOrNull { it.category == category }?.imageUrl
+                val categoryImage = when (category) {
+
+                    "All" -> R.drawable.food
+                    "Pizza" -> R.drawable.ic_pizza
+                    "Pasta" -> R.drawable.ic_pasta
+                    else -> initialMenuItems.firstOrNull { it.category == category }?.imageUrl
                 }
+
+
 
                 Card(
                     modifier = Modifier
@@ -492,17 +463,5 @@ fun CategoriesList(
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 

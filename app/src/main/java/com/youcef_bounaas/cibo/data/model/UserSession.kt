@@ -1,16 +1,18 @@
 package com.youcef_bounaas.cibo.data.model
 
+
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
 import android.util.Log
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 
 @Serializable
@@ -48,7 +50,21 @@ object UserSessionSerializer : Serializer<UserSession> {
 
 class SessionManager private constructor(private val context: Context) {
 
+    private val _userSession = MutableStateFlow(UserSession())
+    val userSessions= _userSession.asStateFlow()
+    private val _isSessionLoading = MutableStateFlow(true) // initially loading
+    val isSessionLoading = _isSessionLoading.asStateFlow()
+
+    init {
+        // Your logic for session initialization, for example:
+        // If fetching session data from shared preferences or remote server
+        // After fetching:
+
+        _isSessionLoading.value = false // finished loading
+    }
+
     companion object {
+        @SuppressLint("StaticFieldLeak")
         @Volatile
         private var INSTANCE: SessionManager? = null
 
@@ -61,7 +77,6 @@ class SessionManager private constructor(private val context: Context) {
         }
     }
 
-    // DataStore logic and other methods
     private val Context.userDataStore by dataStore(
         fileName = "user_session.json",
         serializer = UserSessionSerializer
@@ -105,4 +120,3 @@ class SessionManager private constructor(private val context: Context) {
         }
     }
 }
-
