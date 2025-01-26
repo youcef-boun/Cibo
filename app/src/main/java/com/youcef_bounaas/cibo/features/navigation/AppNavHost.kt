@@ -1,7 +1,6 @@
 package com.youcef_bounaas.cibo.features.navigation
 
-import android.content.Context
-import android.os.Bundle
+
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.CircularProgressIndicator
@@ -10,17 +9,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.youcef_bounaas.cibo.data.model.MenuItem
 import com.youcef_bounaas.cibo.data.model.SessionManager
 import com.youcef_bounaas.cibo.data.model.UserSession
@@ -34,8 +28,6 @@ import com.youcef_bounaas.cibo.features.profile.data.ProfileViewModel
 import com.youcef_bounaas.cibo.features.profile.presentation.ProfileScreen
 import kotlinx.serialization.json.Json
 
-import androidx.navigation.compose.composable
-import com.youcef_bounaas.cibo.test.ButtonScreen
 
 
 @Composable
@@ -93,10 +85,6 @@ fun AppNavHost(navController: NavHostController) {
             ProfileScreen(navController = navController, profileViewModel)
         }
 
-        composable("buttonScreen") {
-            Log.d("AppNavHost", "Navigating to buttonScreen")
-            ButtonScreen()
-        }
     }
 
 
