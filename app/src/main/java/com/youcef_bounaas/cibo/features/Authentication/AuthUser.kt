@@ -9,11 +9,11 @@ import kotlinx.serialization.json.put
 
 
 
-suspend fun signUp(email: String, password: String, name: String, role: String): String {
+suspend fun signUp(email: String, password: String, name: String, role : String): String {
     return try {
         val metadata = buildJsonObject {
             put("full_name", name)
-            put("role", role)
+
         }
 
         supabase.auth.signUpWith(Email) {
@@ -46,5 +46,4 @@ suspend fun signIn(email: String, password: String): String {
         }
     }
 }
-
 

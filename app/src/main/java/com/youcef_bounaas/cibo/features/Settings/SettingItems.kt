@@ -41,12 +41,10 @@ fun SettingsItems(navController: NavController,context: Context) {
 
         SettingsSection(title = "Account") {
 
-            SettingsItem("Preferences"){ }
-            SettingsItem("Profile"){ navController.navigate("userInfoScreen") }
-            SettingsItem("Notifications"){ showLocalNotification(context) }
-            SettingsItem("Favourites"){  }
-            SettingsItem("Payments") { }
-            SettingsItem("Order Tracker"){ }
+            SettingsItem("Preferences"){ } // all roles
+            SettingsItem("Profile"){ navController.navigate("userInfoScreen") } // all roles
+            SettingsItem("Notifications"){ showLocalNotification(context) } // costumer , staff
+            SettingsItem("roles management"){ navController.navigate("users")} // Admin only
 
 
 

@@ -13,19 +13,17 @@ import com.youcef_bounaas.cibo.features.Authentication.signUp
 import kotlinx.coroutines.launch
 import io.github.jan.supabase.auth.auth
 import android.util.Log
-
-
-
-
-import androidx.lifecycle.SavedStateHandle
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Columns
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 
 class AuthViewModel(
-    @SuppressLint("StaticFieldLeak") private val context: Context,
-    private val savedStateHandle: SavedStateHandle
+    @SuppressLint("StaticFieldLeak") private val context: Context
 ) : ViewModel() {
 
-    private val sessionManager = SessionManager.getInstance(context)
+    val sessionManager = SessionManager.getInstance(context)
     private val supabase = SupabaseClientProvider.supabase
     var authState = mutableStateOf("")
 
@@ -35,15 +33,39 @@ class AuthViewModel(
         }
     }
 
+
+    private suspend fun fetchUserRole(userId: String): String {
+        val result = supabase
+            .from("users")
+            .select(columns = Columns.list("role")) {
+                filter { eq("id", userId) }
+                single()
+            }
+
+        // Converting the response to a typed object
+        return try {
+            val jsonObject = result.data as JsonObject
+            jsonObject["role"]?.jsonPrimitive?.content ?: "customer"
+        } catch (e: Exception) {
+            "customer"
+        }
+    }
+
+
     private suspend fun checkCurrentSession() {
         try {
             val session = supabase.auth.currentSessionOrNull()
             if (session != null) {
+                val userId = session.user?.id ?: ""
+                val role = fetchUserRole(userId)
+
                 Log.d("AuthViewModel", "Existing session found: ${session.user?.email}")
+
                 sessionManager.updateSession(
                     isLoggedIn = true,
                     email = session.user?.email ?: "",
-                    userId = session.user?.id ?: ""
+                    userId = session.user?.id ?: "",
+                    role = role
                 )
                 authState.value = "Sign in successful: ${session.user?.email}"
             } else {
@@ -56,20 +78,20 @@ class AuthViewModel(
         }
     }
 
-    fun signUpUser(email: String, password: String, name: String, role: String) {
-        Log.d("AuthViewModel", "Starting sign up with email: $email")
+
+
+    fun signUpUser(email: String, password: String, name: String, role : String) {
         viewModelScope.launch {
-            val result = signUp(email, password, name, role)
-            Log.d("AuthViewModel", "Sign up result: $result")
+            val result = signUp(email, password, name , role)
             authState.value = result
             if (result.startsWith("Signup successful")) {
                 try {
                     val session = supabase.auth.currentSessionOrNull()
-                    Log.d("AuthViewModel", "Updating session after sign up: $email")
                     sessionManager.updateSession(
                         isLoggedIn = true,
                         email = email,
-                        userId = session?.user?.id ?: ""
+                        userId = session?.user?.id ?: "",
+                        role = "customer" // Use default role
                     )
                 } catch (e: Exception) {
                     Log.e("AuthViewModel", "Error saving session after sign up: ${e.message}")
@@ -77,6 +99,8 @@ class AuthViewModel(
             }
         }
     }
+
+
 
     fun signInUser(email: String, password: String) {
         Log.d("AuthViewModel", "Starting sign in with email: $email")
@@ -87,11 +111,16 @@ class AuthViewModel(
             if (result.startsWith("Sign in successful")) {
                 try {
                     val session = supabase.auth.currentSessionOrNull()
+                    val userId = session?.user?.id ?: ""
+                    val role = fetchUserRole(userId) // Fetch role after sign-in
+
                     Log.d("AuthViewModel", "Updating session after sign in: $email")
+
                     sessionManager.updateSession(
                         isLoggedIn = true,
                         email = email,
-                        userId = session?.user?.id ?: ""
+                        userId = session?.user?.id ?: "",
+                        role = role // Pass the fetched role
                     )
                 } catch (e: Exception) {
                     Log.e("AuthViewModel", "Error saving session after sign in: ${e.message}")
@@ -114,4 +143,13 @@ class AuthViewModel(
             }
         }
     }
+
+
+
+
+
+
+
+
+
 }

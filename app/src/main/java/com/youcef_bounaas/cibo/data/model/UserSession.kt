@@ -1,18 +1,23 @@
 package com.youcef_bounaas.cibo.data.model
 
 
+
+
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
-import android.util.Log
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 
 @Serializable
@@ -20,7 +25,7 @@ data class UserSession(
     val isLoggedIn: Boolean = false,
     val userId: String = "",
     val email: String = "",
-    val role: String = "customer" // "owner" or "customer"
+    val role: String = "customer"
 )
 
 
@@ -44,7 +49,9 @@ object UserSessionSerializer : Serializer<UserSession> {
     override suspend fun writeTo(t: UserSession, output: OutputStream) {
         val json = Json.encodeToString(UserSession.serializer(), t)
         Log.d("SessionManager", "Saving session data: $json")  // Log session being saved
-        output.write(json.encodeToByteArray())
+        withContext(Dispatchers.IO) {
+            output.write(json.encodeToByteArray())
+        }
     }
 }
 
@@ -55,13 +62,17 @@ class SessionManager private constructor(private val context: Context) {
     private val _isSessionLoading = MutableStateFlow(true) // initially loading
     val isSessionLoading = _isSessionLoading.asStateFlow()
 
-    init {
-        // Your logic for session initialization, for example:
-        // If fetching session data from shared preferences or remote server
-        // After fetching:
+    private val prefs: SharedPreferences =
+        context.getSharedPreferences("user_session", Context.MODE_PRIVATE)
 
-        _isSessionLoading.value = false // finished loading
+    private val editor: SharedPreferences.Editor = prefs.edit()
+
+    init {
+
+        _isSessionLoading.value = false
     }
+
+
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -77,10 +88,16 @@ class SessionManager private constructor(private val context: Context) {
         }
     }
 
+
+
+
+
     private val Context.userDataStore by dataStore(
         fileName = "user_session.json",
         serializer = UserSessionSerializer
     )
+
+
 
     val userSession = context.userDataStore.data
         .catch { exception ->
@@ -92,11 +109,17 @@ class SessionManager private constructor(private val context: Context) {
             }
         }
 
+
+
+
     suspend fun updateSession(
         isLoggedIn: Boolean,
         userId: String = "",
-        email: String = ""
+        email: String = "",
+        role: String
+
     ) {
+
         Log.d("SessionManager", "Updating session with isLoggedIn: $isLoggedIn, userId: $userId, email: $email")
         try {
             context.userDataStore.updateData {
@@ -109,6 +132,7 @@ class SessionManager private constructor(private val context: Context) {
     }
 
     suspend fun clearSession() {
+        editor.clear().apply()
         Log.d("SessionManager", "Clearing session")
         try {
             context.userDataStore.updateData {
@@ -119,4 +143,22 @@ class SessionManager private constructor(private val context: Context) {
             Log.e("SessionManager", "Error clearing session: ${e.message}")
         }
     }
+
+
+    private val sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+
+    fun getUserId(): String {
+        return sharedPreferences.getString("USER_ID", "") ?: ""
+    }
+
+    fun getEmail(): String {
+        return sharedPreferences.getString("EMAIL", "") ?: ""
+    }
+
+
+
+
+
+
+
 }

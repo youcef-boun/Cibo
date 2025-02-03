@@ -1,7 +1,6 @@
 package com.youcef_bounaas.cibo.data.repository.Auth
 
 import android.content.Context
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
@@ -12,7 +11,7 @@ class AuthViewModelFactory(
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
-            return AuthViewModel(context, SavedStateHandle()) as T
+            return AuthViewModel(context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

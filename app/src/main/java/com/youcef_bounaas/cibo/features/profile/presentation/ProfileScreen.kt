@@ -1,5 +1,6 @@
 package com.youcef_bounaas.cibo.features.profile.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -44,7 +45,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.youcef_bounaas.cibo.features.profile.data.ProfileViewModel
 import com.youcef_bounaas.cibo.ui.theme.BabyBlue
 import com.youcef_bounaas.cibo.ui.theme.BloodRed
@@ -73,6 +73,11 @@ fun ProfileScreen(
     val backgroundColor = if (isDarkTheme) Color.DarkGray else Color.White
     val textColor = if (isDarkTheme) Color.White else Color.Black
     val inputBackgroundColor = if (isDarkTheme) Color.Gray else Color.LightGray
+
+    BackHandler {
+
+        navController.popBackStack()
+    }
 
     Scaffold(
         containerColor = backgroundColor,

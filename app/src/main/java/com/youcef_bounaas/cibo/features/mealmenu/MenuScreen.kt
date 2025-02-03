@@ -4,10 +4,7 @@ package com.youcef_bounaas.cibo.features.mealmenu
 
 
 import android.content.Context
-import android.content.res.Configuration
 import android.net.Uri
-import android.util.Log
-import android.view.MotionEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -55,7 +52,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -73,24 +69,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.outlined.AddCircle
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Map
-import androidx.compose.material.icons.outlined.ShoppingCart
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import com.youcef_bounaas.cibo.features.OwnerOnly.OwnerViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+
+
+
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,37 +92,6 @@ fun MenuScreen(
     val searchQuery = rememberSaveable { mutableStateOf("") }
     var showDialog by rememberSaveable { mutableStateOf(false) }
     val ownerViewModel: OwnerViewModel = hiltViewModel()
-
-    val items = listOf(
-        BottomNavigationItem(
-            title = "Home",
-            selectedIcon = Icons.Filled.Home,
-            unselectedIcon = Icons.Outlined.Home,
-            hasNews = false
-        ),
-        BottomNavigationItem(
-            title = "My Order",
-            selectedIcon = Icons.Filled.Map,
-            unselectedIcon = Icons.Outlined.Map,
-            hasNews = false
-        ),
-        BottomNavigationItem(
-            title = "My Cart",
-            selectedIcon = Icons.Filled.ShoppingCart,
-            unselectedIcon = Icons.Outlined.ShoppingCart,
-            hasNews = false
-        ),
-        BottomNavigationItem(
-            title = "Saved",
-            selectedIcon = Icons.Filled.Favorite,
-            unselectedIcon = Icons.Outlined.Favorite,
-            hasNews = false
-        )
-    )
-
-var selectedItemIndex by rememberSaveable {
-    mutableStateOf(0)
-}
 
 
     Scaffold(
@@ -169,44 +127,7 @@ var selectedItemIndex by rememberSaveable {
                 Icon(Icons.Default.Add, contentDescription = "Add Meal")
             }
         },
-        bottomBar = {
-            NavigationBar {
-                items.forEachIndexed { index ,  item ->
-                    NavigationBarItem(
-                        selected = selectedItemIndex == index ,
-                        onClick = {  selectedItemIndex = index },
-                        label = {
-                           Text(text = item.title)
-                        },
-                        icon = {
-                            BadgedBox(
-                                badge = {
-                                    if (item.badgeCount != null){
-                                        Text(text = item.badgeCount.toString())
-                                    }  else if (item.hasNews) {
-                                        Badge()
-                                    }
-                                }
-                            ){
-                                Icon(
 
-                                    imageVector = if (
-                                        index  == selectedItemIndex){
-                                        item.selectedIcon
-                                    }
-                                    else item.unselectedIcon,
-                                    contentDescription = item.title
-
-
-                                )
-                            }
-                        }
-
-                    )
-
-                }
-            }
-        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -260,7 +181,6 @@ var selectedItemIndex by rememberSaveable {
         }
     }
 }
-
 
 @Composable
 fun MenuList(
@@ -555,15 +475,8 @@ fun CategoriesList(
 }
 
 
-data class BottomNavigationItem(
-    val title : String,
-    val selectedIcon : ImageVector,
-    val unselectedIcon : ImageVector,
-    val badgeCount: Int? = null,
-    val hasNews : Boolean
 
-){
 
-}
+
 
 

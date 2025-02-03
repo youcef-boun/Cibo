@@ -1,6 +1,6 @@
-package com.youcef_bounaas.cibo.features.cart.presentation
+package com.youcef_bounaas.cibo.features.favourites.presentation
 
-import androidx.activity.compose.BackHandler
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
-fun CartScreen (navController: NavController) {
+fun FavouriteScreen(navController: NavController) {
 
     Box(
         modifier = Modifier
@@ -23,10 +23,13 @@ fun CartScreen (navController: NavController) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Cart Screen",
+            text = "Favourite Screen",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold
         )
     }
-
 }
+
+
+
+

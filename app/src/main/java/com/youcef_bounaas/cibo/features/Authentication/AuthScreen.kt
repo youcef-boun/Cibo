@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,7 +27,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthScreen(viewModel: AuthViewModel, navController: NavController) {
     var isSignUp by remember { mutableStateOf(true) }
@@ -72,21 +69,6 @@ fun AuthScreen(viewModel: AuthViewModel, navController: NavController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Role dropdown (you can complete this component as needed)
-            ExposedDropdownMenuBox(
-                expanded = false,
-                onExpandedChange = {},
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                TextField(
-                    value = role,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Role") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // Email and password fields
