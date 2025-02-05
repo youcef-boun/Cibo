@@ -17,11 +17,16 @@ object SupabaseClientProvider {
         supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkYWhxZ290anBmYmhrYWdmaGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ3MzcxODgsImV4cCI6MjA1MDMxMzE4OH0.suLXxhKrHnTcFhd7W_QJo4tl5NkGD5XWIGOGislwybk"
     ) {
         install(Postgrest)
-        install(Auth)
+        install(Auth){
+            alwaysAutoRefresh = true
+            autoLoadFromStorage = true
+        }
 
         install(Storage) { // Removed the type parameter for Storage
             // settings
         }
+
+
 
 
     }

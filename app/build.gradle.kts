@@ -84,6 +84,10 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:auth-kt:3.0.3")
 
 
+   // implementation("io.github.jan-tennert.supabase:core-kt:3.0.3")
+
+
+
 
 
 
@@ -139,6 +143,11 @@ dependencies {
     implementation ("androidx.compose.material:material:1.0.5")
     implementation ("androidx.compose.ui:ui-tooling-preview:1.0.5")
     implementation ("androidx.activity:activity-compose:1.4.0")
+
+
+
+    implementation ("io.github.jan-tennert.supabase:gotrue-kt:1.4.7")
+
 
 
 
